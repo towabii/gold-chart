@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>金価格 AIプロフェッショナル・ダッシュボード (Ultimate Edition)</title>
+    <title>金価格 AIプロフェッショナル・ダッシュボード (God Mode v4)</title>
     <!-- ライブラリ読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
@@ -18,9 +18,10 @@
             --gold-color: #d4af37;
             --up-color: #00b894;
             --down-color: #ff7675;
+            --neutral-color: #a0a0a0;
             --border-color: #e5e5e5;
             --accent-blue: #0071e3;
-            --ai-dark: #121214;
+            --ai-dark: #0f1014;
         }
 
         body {
@@ -37,12 +38,12 @@
         /* モード選択モーダル */
         #mode-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 9999;
+            background: rgba(0,0,0,0.9); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
         .mode-box {
             background: #fff; padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; width: 90%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0,113,227,0.3);
         }
         .mode-btn {
             display: block; width: 100%; padding: 15px; margin: 10px 0; font-size: 1.1rem; font-weight: bold;
@@ -73,7 +74,7 @@
 
         .main-grid {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 420px 1fr;
             gap: 20px;
             align-items: start;
         }
@@ -100,23 +101,67 @@
         .diff-row.plus { color: var(--up-color); }
         .diff-row.minus { color: var(--down-color); }
 
-        /* AIパネル (Proモードのみ) */
+        /* ポートフォリオ管理パネル */
+        .portfolio-panel { background: #fff; border-left: 5px solid var(--accent-blue); }
+        .port-header-actions { display: flex; gap: 5px; }
+        .io-btn { font-size: 0.75rem; padding: 4px 8px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; cursor: pointer; color: #555; }
+        .io-btn:hover { background: #e2e6ea; }
+
+        .port-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .port-input-group label { font-size: 0.7rem; color: #666; display: block; margin-bottom: 2px; }
+        .port-input { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 0.9rem; }
+        .port-btn { background: var(--accent-blue); color: #fff; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 5px; }
+        .port-btn:hover { opacity: 0.9; }
+        
+        .port-summary { background: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid #eee; }
+        .port-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
+        .port-total-pl { font-size: 1.2rem; font-weight: bold; text-align: right; }
+        .port-advice { margin-top: 8px; padding: 5px; background: #eeffee; border: 1px solid #ccffcc; color: #006600; font-size: 0.8rem; border-radius: 4px; text-align: center; font-weight: bold; }
+        
+        .history-list { margin-top: 10px; max-height: 150px; overflow-y: auto; font-size: 0.75rem; border-top: 1px solid #eee; }
+        .history-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .h-date { color: #888; width: 70px; }
+        .h-detail { flex-grow: 1; }
+        .h-del { color: red; cursor: pointer; margin-left: 5px; }
+
+        /* 超強化AIパネル */
         .ai-panel {
             background: var(--ai-dark);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
+            color: #eee;
+            padding: 25px;
+            border-radius: 16px;
             position: relative;
             overflow: hidden;
             border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .ai-header { font-size: 0.85rem; color: #00d1ff; margin-bottom: 10px; font-weight: bold; display: flex; justify-content: space-between; }
-        .ai-signal { font-size: 2.4rem; font-weight: 900; margin-bottom: 5px; letter-spacing: 2px; }
-        .ai-confidence-bar { height: 6px; background: #333; border-radius: 3px; margin: 10px 0; overflow: hidden; }
-        .ai-confidence-fill { height: 100%; background: linear-gradient(90deg, #00d1ff, #0071e3); width: 0%; transition: width 1.5s ease-out; }
-        .ai-reasoning { font-size: 0.88rem; line-height: 1.7; color: #ececec; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
-        .ai-reasoning b { color: #ffd700; text-decoration: underline; }
-        .evidence-tag { display: inline-block; background: #333; color: #00d1ff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-right: 5px; margin-bottom: 5px; }
+        .ai-header { font-size: 0.9rem; color: #00d1ff; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .reload-btn { background: transparent; border: 1px solid #333; color: #888; border-radius: 4px; cursor: pointer; padding: 2px 6px; transition: 0.2s; }
+        .reload-btn:hover { background: #333; color: #fff; }
+        
+        .ai-signal-box { text-align: center; padding: 10px; border-bottom: 1px solid #333; margin-bottom: 15px; }
+        .ai-signal { font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        
+        /* 信頼度メーター */
+        .meter-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .meter-bar-bg { flex-grow: 1; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+        .meter-bar-fill { height: 100%; width: 0%; transition: width 1s ease-out; }
+        
+        /* テクニカル詳細グリッド */
+        .tech-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .tech-item { background: #1a1b20; padding: 6px; border-radius: 4px; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; }
+        .tech-label { color: #888; margin-bottom: 2px; }
+        .tech-val { font-weight: bold; font-family: monospace; color: #fff; }
+        .tech-bull { color: var(--up-color); }
+        .tech-bear { color: var(--down-color); }
+        
+        /* AI詳細レポートスタイル (強化版) */
+        .ai-report { font-size: 0.85rem; line-height: 1.6; color: #ccc; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; max-height: 300px; overflow-y: auto; }
+        .report-section { margin-bottom: 12px; background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; }
+        .report-title { color: #00d1ff; font-weight: bold; font-size: 0.8rem; margin-bottom: 4px; display: block; border-bottom: 1px dashed #444; padding-bottom: 2px; }
+        .report-content { font-size: 0.8rem; }
+        .report-content b { color: #ffd700; }
+        .risk-line { color: #ff7675; font-weight: bold; display: block; text-align: right; margin-top: 5px; font-size: 0.8rem; }
 
         .right-column { display: flex; flex-direction: column; gap: 20px; }
 
@@ -130,11 +175,9 @@
             padding: 10px;
         }
 
-        /* 描画レイヤー (SVG) */
         #drawing-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; pointer-events: none; /* 通常は操作不可 */
-            overflow: hidden;
+            z-index: 10; pointer-events: none; overflow: hidden;
         }
         #drawing-layer.active { pointer-events: auto; cursor: crosshair; background: rgba(255,255,255,0.05); }
 
@@ -146,18 +189,16 @@
         .btn.active { background: var(--accent-blue); color: white; }
         .divider { width: 1px; height: 20px; background: #ddd; margin: 0 8px; }
 
-        /* お絵描きツールバー */
         .drawing-toolbar {
             position: absolute; top: 60px; right: 20px; z-index: 20;
-            background: rgba(255,255,255,0.9); border: 1px solid #ccc;
+            background: rgba(255,255,255,0.95); border: 1px solid #ccc;
             padding: 5px; border-radius: 8px; display: flex; flex-direction: column; gap: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .draw-btn { width: 30px; height: 30px; border: none; background: transparent; cursor: pointer; border-radius: 4px; color: #555; }
+        .draw-btn { width: 35px; height: 35px; border: none; background: transparent; cursor: pointer; border-radius: 4px; color: #555; font-size: 1.1rem; }
         .draw-btn:hover { background: #eee; }
         .draw-btn.active { background: var(--accent-blue); color: #fff; }
 
-        /* 写真表示パネル */
         .photo-panel {
             padding: 20px;
             background: #fff;
@@ -168,7 +209,7 @@
         .photo-panel h3 { margin: 0 0 15px 0; font-size: 1rem; color: #333; display: flex; align-items: center; gap: 8px; justify-content: center; }
         .pattern-photo { width: 100%; height: auto; display: block; object-fit: contain; border-radius: 8px; }
 
-        .news-header { font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #333; }
+        .news-header { font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #333; }
         .news-list { list-style: none; padding: 0; margin: 0; }
         .news-item { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .news-title { display: block; text-decoration: none; color: #0066cc; font-size: 0.9rem; margin-bottom: 4px; }
@@ -181,11 +222,12 @@
 <!-- モード選択 -->
 <div id="mode-modal">
     <div class="mode-box">
-        <h2><i class="fa-solid fa-rocket"></i> 起動モード選択</h2>
-        <p>PCスペックに合わせてモードを選択してください</p>
+        <div style="font-size: 3rem; color: #0071e3; margin-bottom: 10px;"><i class="fa-solid fa-robot"></i></div>
+        <h2>Gold AI Dashboard Ultimate</h2>
+        <p style="color:#666; margin-bottom:20px;">使用するモードを選択してください</p>
         <button class="mode-btn btn-pro" onclick="selectMode('pro')">
             <i class="fa-solid fa-brain"></i> AIプロフェッショナルモード<br>
-            <span style="font-size:0.8rem; font-weight:normal;">AI予測チャート・全機能・高負荷</span>
+            <span style="font-size:0.8rem; font-weight:normal;">全7種指標分析・予測機能・フル機能</span>
         </button>
         <button class="mode-btn btn-lite" onclick="selectMode('lite')">
             <i class="fa-solid fa-feather"></i> 軽量モード<br>
@@ -196,12 +238,12 @@
 
 <div id="loading" class="loading-overlay" style="display:none;">
     <i class="fa-solid fa-microchip fa-spin" style="font-size: 3rem; margin-bottom: 15px; color: var(--gold-color);"></i>
-    <div>システム初期化中...</div>
+    <div>AI初期化学習中...</div>
 </div>
 
 <div class="container">
     <header>
-        <h1><i class="fa-solid fa-coins" style="color:var(--gold-color)"></i> 国内金価格・総合分析ダッシュボード</h1>
+        <h1><i class="fa-solid fa-coins" style="color:var(--gold-color)"></i> 国内金価格・統合分析ダッシュボード</h1>
         <div style="display:flex; align-items:center; gap:15px;">
             <div style="text-align:right; font-size:0.8rem; color:var(--text-sub);">
                 ドル円為替: <span id="fx-rate" style="font-weight:bold; color:var(--text-main);">---</span><br>
@@ -231,29 +273,50 @@
             <!-- AI深層分析 (Proモードのみ表示) -->
             <div class="ai-panel" id="ai-panel-container">
                 <div class="ai-header">
-                    <span><i class="fa-solid fa-brain"></i> AI投資判断エンジン (Super Enhanced v5.0)</span>
-                    <span id="ai-status">計算完了</span>
+                    <span><i class="fa-solid fa-brain"></i> AI Super Confluence Engine</span>
+                    <div>
+                        <span id="ai-status" style="margin-right:10px; font-size:0.7rem; color:#666;">Active</span>
+                        <button class="reload-btn" onclick="runAIForce()" title="AI再分析"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
                 </div>
-                <div class="ai-signal" id="ai-signal">分析中</div>
-                <div class="ai-confidence-bar"><div class="ai-confidence-fill" id="ai-conf-fill"></div></div>
-                <div id="ai-confidence-text" style="font-size:0.8rem;">信頼度: --%</div>
-                <div class="ai-reasoning" id="ai-reasoning">
-                    SMAトレンド、ニュース感情分析、パターン照合を実行中...
+                
+                <div class="ai-signal-box">
+                    <div class="ai-signal" id="ai-signal">ANALYZING</div>
+                </div>
+
+                <div class="meter-container">
+                    <span style="font-size:0.8rem; width:50px;">確信度</span>
+                    <div class="meter-bar-bg"><div class="meter-bar-fill" id="ai-conf-fill"></div></div>
+                    <span id="ai-confidence-text" style="font-size:0.8rem; width:40px;">--%</span>
+                </div>
+
+                <div class="tech-grid">
+                    <div class="tech-item"><span class="tech-label">RSI</span><span class="tech-val" id="tech-rsi">--</span></div>
+                    <div class="tech-item"><span class="tech-label">MACD</span><span class="tech-val" id="tech-macd">--</span></div>
+                    <div class="tech-item"><span class="tech-label">BBands</span><span class="tech-val" id="tech-bb">--</span></div>
+                    <div class="tech-item"><span class="tech-label">EMA</span><span class="tech-val" id="tech-ema">--</span></div>
+                    <div class="tech-item"><span class="tech-label">SMA</span><span class="tech-val" id="tech-sma">--</span></div>
+                    <div class="tech-item"><span class="tech-label">Pattern</span><span class="tech-val" id="tech-pattern">--</span></div>
+                </div>
+
+                <div class="ai-report" id="ai-reasoning">
+                    RSI, MACD, BB, EMA, SMA, Pattern, Fundamentals の7指標を統合分析中...
                 </div>
             </div>
 
             <div class="panel">
-                <div class="news-header"><i class="fa-brands fa-google"></i> 市場ニュース</div>
+                <div class="news-header">
+                    <span><i class="fa-brands fa-google"></i> 市場ニュース</span>
+                    <button class="reload-btn" onclick="fetchNews()" title="ニュース更新"><i class="fa-solid fa-rotate"></i></button>
+                </div>
                 <div id="news-container"><div style="text-align:center; color:#999; padding:20px;">読込中...</div></div>
             </div>
         </div>
 
         <!-- 右サイド -->
         <div class="right-column">
-            <!-- チャート (ツールバー分離) -->
+            <!-- チャート -->
             <div class="chart-container-wrapper">
-                
-                <!-- 上部ツールバー -->
                 <div class="chart-toolbar">
                     <span class="toolbar-label">足種(Unit):</span>
                     <div class="toolbar-group">
@@ -282,17 +345,14 @@
                     </div>
                 </div>
 
-                <!-- お絵描きツールバー (フローティング) -->
                 <div class="drawing-toolbar" id="drawing-tools" style="display:none;">
                     <button class="draw-btn active" onclick="setDrawTool('line')" title="線"><i class="fa-solid fa-minus"></i></button>
                     <button class="draw-btn" onclick="setDrawTool('arrow')" title="矢印"><i class="fa-solid fa-arrow-right"></i></button>
                     <button class="draw-btn" onclick="setDrawTool('text')" title="文字"><i class="fa-solid fa-font"></i></button>
                 </div>
 
-                <!-- チャート本体 -->
-                <div style="position: relative; height: 500px;">
+                <div style="position: relative; height: 550px;">
                     <div id="goldChart" style="height: 100%;"></div>
-                    <!-- 描画用SVGレイヤー -->
                     <svg id="drawing-layer"></svg>
                 </div>
                 <div style="font-size:0.75rem; color:#888; text-align:right; margin-top:5px;">
@@ -307,90 +367,273 @@
                     <img src="pattern.png" class="pattern-photo" alt="Chart Patterns Reference">
                 </div>
             </div>
+
+            <!-- ポートフォリオ管理 (右側に移動) -->
+            <div class="panel portfolio-panel">
+                <div class="card-title" style="margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span><i class="fa-solid fa-wallet"></i> 資産ポートフォリオ管理</span>
+                    </div>
+                    <div class="port-header-actions">
+                        <button class="io-btn" onclick="exportData()"><i class="fa-solid fa-file-export"></i> 書出</button>
+                        <button class="io-btn" onclick="document.getElementById('import-file').click()"><i class="fa-solid fa-file-import"></i> 読込</button>
+                        <input type="file" id="import-file" style="display:none" onchange="importData(this)">
+                    </div>
+                </div>
+                
+                <div class="port-form">
+                    <div class="port-input-group">
+                        <label>取引日時</label>
+                        <input type="datetime-local" id="port-date" class="port-input">
+                    </div>
+                    <div class="port-input-group">
+                        <label>区分</label>
+                        <select id="port-type" class="port-input">
+                            <option value="buy">買付 (Buy)</option>
+                            <option value="sell">売却 (Sell)</option>
+                        </select>
+                    </div>
+                    <div class="port-input-group">
+                        <label>購入単価 (円/g)</label>
+                        <input type="number" id="port-price" class="port-input" placeholder="例: 12000">
+                    </div>
+                    <div class="port-input-group">
+                        <label>投資金額 (円)</label>
+                        <input type="number" id="port-amount" class="port-input" placeholder="例: 1000">
+                    </div>
+                </div>
+                <button class="port-btn" onclick="addRecord()">取引を記録する</button>
+
+                <div class="port-summary">
+                    <div class="port-row"><span>保有総重量</span><span style="font-weight:bold;" id="sum-gram">0.000 g</span></div>
+                    <div class="port-row"><span>平均取得単価</span><span style="font-weight:bold;" id="sum-avg">0 円/g</span></div>
+                    <div class="port-row"><span>現在評価額</span><span style="font-weight:bold;" id="sum-val">0 円</span></div>
+                    <div class="port-row"><span>評価損益</span><span class="port-total-pl" id="sum-pl">0 円</span></div>
+                    <div class="port-advice" id="port-advice">取引履歴がありません</div>
+                </div>
+
+                <div class="history-list" id="history-list">
+                    <!-- JSで生成 -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 設定定数 ---
     const OZ_TO_G = 31.1034768; 
     const SPREAD = 120;
 
-    // AI学習済みパターンデータベース (画像内の30種)
     const patternDatabase = [
-        {name: "三尊(ヘッド＆ショルダー)", type: "sell"}, {name: "逆三尊(逆ヘッド＆ショルダー)", type: "buy"}, 
+        {name: "三尊", type: "sell"}, {name: "逆三尊", type: "buy"}, 
         {name: "逆V字", type: "sell"}, {name: "V字", type: "buy"},
-        {name: "下降の上昇ウェッジ", type: "sell"}, {name: "上昇の下降ウェッジ", type: "buy"},
-        {name: "トリプル・トップ", type: "sell"}, {name: "トリプル・ボトム", type: "buy"},
-        {name: "下降レクタングル", type: "sell"}, {name: "上昇レクタングル", type: "buy"},
-        {name: "ディセンディング・トライアングル", type: "sell"}, {name: "アセンディング・トライアングル", type: "buy"},
-        {name: "ダブル・トップ", type: "sell"}, {name: "ダブル・ボトム", type: "buy"},
-        {name: "下降フラッグ", type: "sell"}, {name: "上昇フラッグ", type: "buy"},
-        {name: "シンメトリカル(売)", type: "sell"}, {name: "シンメトリカル(買)", type: "buy"},
-        {name: "ソーサー・トップ", type: "sell"}, {name: "ソーサー・ボトム", type: "buy"},
-        {name: "ミニサイクル(下落)", type: "sell"}, {name: "ミニサイクル(上昇)", type: "buy"},
-        {name: "下降ペナント", type: "sell"}, {name: "上昇ペナント", type: "buy"},
-        {name: "逆カップ＆ハンドル", type: "sell"}, {name: "カップ＆ハンドル", type: "buy"},
-        {name: "下降ダイヤモンド", type: "sell"}, {name: "上昇ダイヤモンド", type: "buy"},
-        {name: "下降逆トライアングル", type: "sell"}, {name: "上昇逆トライアングル", type: "buy"}
+        {name: "上昇ウェッジ", type: "sell"}, {name: "下降ウェッジ", type: "buy"},
+        {name: "トリプルトップ", type: "sell"}, {name: "トリプルボトム", type: "buy"},
+        {name: "レクタングル", type: "neutral"}, 
+        {name: "ダブルトップ", type: "sell"}, {name: "ダブルボトム", type: "buy"},
+        {name: "フラッグ", type: "neutral"}, {name: "ペナント", type: "neutral"},
+        {name: "ソーサートップ", type: "sell"}, {name: "ソーサーボトム", type: "buy"},
+        {name: "カップ＆ハンドル", type: "buy"}, {name: "ダイヤモンド", type: "neutral"}
     ];
     
-    // --- グローバル状態 ---
     let state = { 
-        mode: 'lite', // 'pro' or 'lite'
+        mode: 'lite', 
         fxRate: 0, 
-        unit: '1d', // API interval
+        unit: '1d', 
         chartType: 'candlestick',
         currentSpot: 0, 
         prevCloseSpot: 0, 
         lastNews: "",
+        aiSignalResult: "中立",
         drawMode: false,
         drawTool: 'line',
         isDrawing: false,
         startX: 0, startY: 0,
-        drawings: []
+        drawings: [],
+        chartMinX: null, 
+        chartMaxX: null,
+        portfolio: []
     };
 
     let chartInstance = null;
-    let marketDataCache = []; // データキャッシュ
+    let marketDataCache = []; 
 
-    // ----------------------------------------------------
-    // 1. 起動・モード選択
-    // ----------------------------------------------------
     function selectMode(mode) {
         state.mode = mode;
         document.getElementById('mode-modal').style.display = 'none';
         document.getElementById('loading').style.display = 'flex';
-        
-        // LiteモードならAIパネルを非表示
         if (mode === 'lite') {
             document.getElementById('ai-panel-container').style.display = 'none';
         }
-
-        // 初期化開始
         initApp();
     }
 
     async function initApp() {
-        loadDrawings(); // 保存された描画をロード
+        document.getElementById('port-date').value = dayjs().format('YYYY-MM-DDTHH:mm');
+        loadDrawings(); 
+        loadPortfolio();
         initChart();
-        await loadMarketData(); // 初回データ
+        await loadMarketData(); 
         await fetchNews();
-        
         document.getElementById('loading').style.display = 'none';
-
-        // 定期更新 (チャートリセット防止のためDataUpdateのみ)
-        setInterval(async () => {
-            await updateRealtimePrice();
-        }, 5000);
-
-        // ニュース更新（低頻度）
+        setInterval(async () => { await updateRealtimePrice(); }, 5000);
         setInterval(fetchNews, 60000);
     }
 
-    // ----------------------------------------------------
-    // 2. チャート機能 (ApexCharts)
-    // ----------------------------------------------------
+    // --- データ移行機能 ---
+    function exportData() {
+        const data = {
+            portfolio: state.portfolio,
+            drawings: localStorage.getItem('goldChartDrawings') || ""
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gold_dashboard_backup_${dayjs().format('YYYYMMDD')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function importData(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.portfolio) {
+                    state.portfolio = data.portfolio;
+                    savePortfolio();
+                    renderPortfolio();
+                }
+                if(data.drawings) {
+                    localStorage.setItem('goldChartDrawings', data.drawings);
+                    loadDrawings();
+                }
+                alert("データの復元が完了しました");
+            } catch(err) {
+                alert("ファイルの読み込みに失敗しました");
+            }
+        };
+        reader.readAsText(file);
+        input.value = ''; // リセット
+    }
+
+    // --- ポートフォリオ機能 ---
+    function addRecord() {
+        const date = document.getElementById('port-date').value;
+        const type = document.getElementById('port-type').value;
+        const price = parseFloat(document.getElementById('port-price').value);
+        const amount = parseFloat(document.getElementById('port-amount').value);
+
+        if(!date || !price || !amount) {
+            alert("すべての項目を入力してください");
+            return;
+        }
+        const gram = amount / price;
+        const record = {
+            id: Date.now(),
+            date: date,
+            type: type,
+            price: price,
+            amount: amount,
+            gram: gram
+        };
+        state.portfolio.push(record);
+        savePortfolio();
+        renderPortfolio();
+        alert("記録しました");
+    }
+
+    function savePortfolio() {
+        localStorage.setItem('goldPortfolio', JSON.stringify(state.portfolio));
+    }
+
+    function loadPortfolio() {
+        const saved = localStorage.getItem('goldPortfolio');
+        if(saved) {
+            state.portfolio = JSON.parse(saved);
+            renderPortfolio();
+        }
+    }
+
+    function deleteRecord(id) {
+        if(confirm("この記録を削除しますか？")) {
+            state.portfolio = state.portfolio.filter(r => r.id !== id);
+            savePortfolio();
+            renderPortfolio();
+        }
+    }
+
+    function renderPortfolio() {
+        const list = document.getElementById('history-list');
+        list.innerHTML = "";
+        
+        let totalGram = 0;
+        let totalCost = 0;
+
+        state.portfolio.forEach(r => {
+            if(r.type === 'buy') {
+                totalGram += r.gram;
+                totalCost += r.amount;
+            } else {
+                totalGram -= r.gram;
+                totalCost -= (r.amount);
+            }
+
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `
+                <span class="h-date">${dayjs(r.date).format('MM/DD HH:mm')}</span>
+                <span class="h-detail" style="color:${r.type==='buy'?'#00b894':'#ff7675'}">
+                    ${r.type==='buy'?'買':'売'} ${r.gram.toFixed(3)}g (@${r.price.toLocaleString()})
+                </span>
+                <span class="h-del" onclick="deleteRecord(${r.id})">×</span>
+            `;
+            list.appendChild(div);
+        });
+
+        const currentSellPrice = Math.floor(state.currentSpot - SPREAD); 
+        const currentVal = Math.floor(totalGram * currentSellPrice);
+        const pl = currentVal - totalCost; 
+        const avgPrice = totalGram > 0 ? Math.floor(totalCost / totalGram) : 0;
+
+        document.getElementById('sum-gram').innerText = totalGram.toFixed(3) + " g";
+        document.getElementById('sum-avg').innerText = avgPrice.toLocaleString() + " 円/g";
+        document.getElementById('sum-val').innerText = currentVal.toLocaleString() + " 円";
+        
+        const plEl = document.getElementById('sum-pl');
+        plEl.innerText = (pl>=0?"+":"") + pl.toLocaleString() + " 円";
+        plEl.style.color = pl>=0 ? "var(--up-color)" : "var(--down-color)";
+
+        let advice = "";
+        if(totalGram <= 0.001) {
+            advice = "現在保有なし。AIシグナルを参考に買い場を探しましょう。";
+        } else {
+            const ai = state.aiSignalResult; 
+            if(pl > 0 && (ai.includes("売") || ai.includes("中立"))) {
+                advice = "利益が出ています。AIは調整を示唆しているため【利確】を検討推奨。";
+                document.getElementById('port-advice').style.background = "#fff3cd";
+                document.getElementById('port-advice').style.color = "#856404";
+            } else if(pl < 0 && ai.includes("売")) {
+                advice = "含み損拡大の恐れあり。AIは下落を示唆しています。【損切】検討ラインです。";
+                document.getElementById('port-advice').style.background = "#f8d7da";
+                document.getElementById('port-advice').style.color = "#721c24";
+            } else if(ai.includes("買")) {
+                advice = "AIは上昇トレンドを予測中。現在は【保有継続】または【買い増し】が有効です。";
+                document.getElementById('port-advice').style.background = "#d4edda";
+                document.getElementById('port-advice').style.color = "#155724";
+            } else {
+                advice = "相場は膠着状態。現在のポジションを維持しつつ様子見を推奨。";
+                document.getElementById('port-advice').style.background = "#eee";
+                document.getElementById('port-advice').style.color = "#333";
+            }
+        }
+        document.getElementById('port-advice').innerText = advice;
+    }
+
+    // --- チャート ---
     function initChart() {
         const options = {
             series: [],
@@ -399,45 +642,46 @@
                 type: 'candlestick', 
                 height: '100%', 
                 animations: { enabled: false }, 
-                toolbar: { show: false }, // 自作ツールバーを使うためOFF
+                toolbar: { show: false }, 
                 zoom: { enabled: true, type: 'x', autoScaleYaxis: true },
+                events: {
+                    beforeZoom: function(chartContext, { xaxis }) {
+                        state.chartMinX = xaxis.min;
+                        state.chartMaxX = xaxis.max;
+                    },
+                    zoomed: function(chartContext, { xaxis }) {
+                        state.chartMinX = xaxis.min;
+                        state.chartMaxX = xaxis.max;
+                    }
+                }
             },
             plotOptions: { candlestick: { colors: { upward: '#00b894', downward: '#ff7675' } } },
-            stroke: { width: 1, curve: 'smooth' },
-            colors: ['#d4af37', '#0071e3'], // 金色、予測線用青
-            xaxis: { 
-                type: 'datetime', 
-                labels: { datetimeFormatter: { year: 'yyyy', month: 'MM/dd', day: 'dd', hour: 'HH:mm' } } 
-            },
-            yaxis: { 
-                opposite: true, 
-                labels: { formatter: (val) => Math.floor(val).toLocaleString() } 
-            },
+            stroke: { width: 1 }, 
+            colors: ['#d4af37', '#0071e3'], 
+            xaxis: { type: 'datetime', labels: { datetimeFormatter: { year: 'yyyy', month: 'MM/dd', day: 'dd', hour: 'HH:mm' } } },
+            yaxis: { opposite: true, labels: { formatter: (val) => Math.floor(val).toLocaleString() } },
             grid: { borderColor: '#f0f0f0' },
             tooltip: { theme: 'light', x: { format: 'yyyy/MM/dd HH:mm' } }
         };
-        
         chartInstance = new ApexCharts(document.querySelector("#goldChart"), options);
         chartInstance.render();
     }
 
-    // 単位（足種）変更
     window.setUnit = (unit, btn) => {
         document.querySelectorAll('.toolbar-group .btn').forEach(b => {
             if(['1分','15分','1時間','4時間','日足'].includes(b.innerText) || b === btn) b.classList.remove('active');
         });
         btn.classList.add('active');
         state.unit = unit;
-        loadMarketData(); // 足種変更時はデータ再取得必須
+        state.chartMinX = null; 
+        state.chartMaxX = null;
+        loadMarketData();
     };
 
-    // 期間（ズーム）変更 - データ再取得せずズームのみ
     window.setZoom = (range) => {
         if(marketDataCache.length === 0) return;
-        
         const lastDate = marketDataCache[marketDataCache.length-1].x;
         let minDate;
-
         switch(range) {
             case '1d': minDate = lastDate - 86400000; break;
             case '1w': minDate = lastDate - 86400000 * 7; break;
@@ -445,10 +689,10 @@
             case '1y': minDate = lastDate - 86400000 * 365; break;
             case 'all': minDate = undefined; break;
         }
-
+        state.chartMinX = minDate;
+        state.chartMaxX = lastDate;
         chartInstance.zoomX(minDate, lastDate);
         
-        // ボタン状態
         const textMap = {'1d':'1日','1w':'1週','1m':'1ヶ月','1y':'1年','all':'全期間'};
         document.querySelectorAll('.toolbar-group .btn').forEach(b => {
             if(textMap[range] === b.innerText) b.classList.add('active');
@@ -456,9 +700,6 @@
         });
     };
 
-    // ----------------------------------------------------
-    // 3. データ取得 & ロジック
-    // ----------------------------------------------------
     async function loadMarketData() {
         try {
             if(state.fxRate === 0) {
@@ -468,48 +709,39 @@
                 document.getElementById('fx-rate').innerText = state.fxRate.toFixed(2);
             }
 
-            // Binanceデータ取得 (1000本確保してスクロール可能に)
             const limit = 1000;
             const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=PAXGUSDT&interval=${state.unit}&limit=${limit}`);
             const data = await res.json();
 
-            // データ変換
             const seriesData = data.map(d => {
                 const conv = (v) => Math.floor((parseFloat(v) * state.fxRate) / OZ_TO_G);
-                return { 
-                    x: d[0], 
-                    y: [conv(d[1]), conv(d[2]), conv(d[3]), conv(d[4])] // Open, High, Low, Close
-                };
+                return { x: d[0], y: [conv(d[1]), conv(d[2]), conv(d[3]), conv(d[4])] };
             });
 
             marketDataCache = seriesData;
-
-            // シリーズ構成
             let seriesList = [{ name: '金価格', type: 'candlestick', data: seriesData }];
 
-            // AIモードなら「予測ライン」を追加
             if (state.mode === 'pro') {
                 const prediction = generateAIPrediction(seriesData);
                 seriesList.push({ name: 'AI予測軌道', type: 'line', data: prediction });
-                runSuperAIAnalysis(seriesData); // 分析実行
+                runUltimateAIAnalysis(seriesData); 
             }
 
-            // 現在のズーム状態を維持するための処理
-            const currentMin = chartInstance.w.globals.minX;
-            const currentMax = chartInstance.w.globals.maxX;
-            
             await chartInstance.updateSeries(seriesList);
 
-            if(currentMin && currentMax) {
-                chartInstance.zoomX(currentMin, currentMax);
+            if(state.chartMinX && state.chartMaxX) {
+                chartInstance.zoomX(state.chartMinX, state.chartMaxX);
+            } else {
+                const startZoom = seriesData[seriesData.length - Math.min(100, seriesData.length)].x;
+                chartInstance.zoomX(startZoom, seriesData[seriesData.length - 1].x);
             }
 
-            // 最新価格更新
             const last = data[data.length - 1];
             state.currentSpot = (parseFloat(last[4]) * state.fxRate) / OZ_TO_G;
             state.prevCloseSpot = (parseFloat(data[data.length - 2][4]) * state.fxRate) / OZ_TO_G;
             
             updatePriceDisplay();
+            renderPortfolio();
 
         } catch (e) { console.error("Load Error:", e); }
     }
@@ -522,7 +754,7 @@
             const currentUsd = parseFloat(data.price);
             state.currentSpot = (currentUsd * state.fxRate) / OZ_TO_G;
             updatePriceDisplay();
-            // リアルタイム更新時はチャート再描画しない（操作性維持のため）
+            renderPortfolio();
         } catch(e){}
     }
 
@@ -530,127 +762,147 @@
         const sell = Math.floor(state.currentSpot - SPREAD);
         const buy = Math.floor(state.currentSpot + SPREAD);
         const diff = sell - Math.floor(state.prevCloseSpot - SPREAD);
-        
         document.getElementById('sell-price').innerText = sell.toLocaleString();
         document.getElementById('buy-price').innerText = buy.toLocaleString();
-        
         const diffEl = document.getElementById('sell-diff');
         diffEl.innerHTML = `前日比 <span style="margin-left:5px;">${diff>0?'+':''}${diff.toLocaleString()}</span> 円/g`;
         diffEl.className = `diff-row ${diff>=0?'plus':'minus'}`;
-        
         document.getElementById('timestamp').innerText = dayjs().format('HH:mm:ss');
     }
 
-    // ----------------------------------------------------
-    // 4. 超強化AIロジック (SMA + News + Pattern)
-    // ----------------------------------------------------
-    function generateAIPrediction(historyData) {
-        // SMAとモメンタムに基づく予測線生成
-        const lastPoint = historyData[historyData.length - 1];
-        const lastPrice = lastPoint.y[3];
-        const timeStep = lastPoint.x - historyData[historyData.length - 2].x;
-        
-        // 短期トレンド計算
-        let sumChange = 0;
-        for(let i = historyData.length - 10; i < historyData.length; i++) {
-            if(i > 0) sumChange += (historyData[i].y[3] - historyData[i-1].y[3]);
+    // --- AI Logic ---
+    function runAIForce() {
+        document.getElementById('ai-status').innerText = "再計算中...";
+        if(marketDataCache.length > 0) {
+            setTimeout(() => {
+                runUltimateAIAnalysis(marketDataCache);
+                document.getElementById('ai-status').innerText = "Active";
+            }, 500);
         }
-        const trend = sumChange / 10; 
-
-        let predData = [];
-        let futurePrice = lastPrice;
-        
-        for(let i = 1; i <= 15; i++) {
-            futurePrice += (trend * 0.9) + (Math.random() * trend * 0.2); 
-            predData.push({
-                x: lastPoint.x + (timeStep * i),
-                y: Math.floor(futurePrice)
-            });
-        }
-        return predData;
     }
 
-    function runSuperAIAnalysis(data) {
-        // 1. SMA分析 (トレンド追従)
-        const closes = data.map(d => d.y[3]);
-        const sma20 = calculateSMA(closes, 20);
-        const sma50 = calculateSMA(closes, 50);
+    function calculateRSI(data, period=14) {
+        let gains=0, losses=0;
+        for(let i=data.length-period; i<data.length; i++){
+            const chg = data[i]-data[i-1];
+            if(chg>0) gains+=chg; else losses-=chg;
+        }
+        return 100 - (100/(1+(gains/period)/(losses/period)));
+    }
+    function calculateSMA(data, period) {
+        if(data.length<period) return data[data.length-1];
+        let sum=0; for(let i=data.length-period; i<data.length; i++) sum+=data[i];
+        return sum/period;
+    }
+    function calculateEMA(data, period) {
+        let k=2/(period+1), ema=data[0];
+        for(let i=1; i<data.length; i++) ema=data[i]*k + ema*(1-k);
+        return ema;
+    }
+    function calculateBB(data, period=20) {
+        const slice=data.slice(-period);
+        const mean=slice.reduce((a,b)=>a+b,0)/period;
+        const sd=Math.sqrt(slice.reduce((a,b)=>a+Math.pow(b-mean,2),0)/period);
+        return (data[data.length-1]-(mean-sd*2))/((mean+sd*2)-(mean-sd*2)); 
+    }
+
+    function generateAIPrediction(historyData) {
+        const last = historyData[historyData.length-1];
+        const closes = historyData.map(d=>d.y[3]);
+        const ema20 = calculateEMA(closes,20);
+        const dir = last.y[3]>ema20 ? 1 : -1;
+        let pred=[]; let price=last.y[3];
+        const step = last.x - historyData[historyData.length-2].x;
+        for(let i=1; i<=12; i++){
+            price += (dir*10*Math.exp(-i*0.1)) + (Math.random()*20-10);
+            pred.push({x:last.x+(step*i), y:Math.floor(price)});
+        }
+        return pred;
+    }
+
+    function runUltimateAIAnalysis(seriesData) {
+        const closes = seriesData.map(d=>d.y[3]);
         const current = closes[closes.length-1];
         
-        let technicalScore = 0; // -10 ~ 10
-        let techReason = "";
+        const rsi = calculateRSI(closes);
+        const ema12 = calculateEMA(closes,12);
+        const ema26 = calculateEMA(closes,26);
+        const macd = ema12 - ema26;
+        const bb = calculateBB(closes);
+        const ema50 = calculateEMA(closes,50);
+        const sma20 = calculateSMA(closes,20);
+        const sma100 = calculateSMA(closes,100);
 
-        if (current > sma20 && sma20 > sma50) {
-            technicalScore = 8;
-            techReason = "価格がSMA20/50の上位に位置し、パーフェクトオーダー(上昇)形成中。";
-        } else if (current < sma20 && sma20 < sma50) {
-            technicalScore = -8;
-            techReason = "価格が主要移動平均線を下回り、下降トレンドが継続中。";
-        } else {
-            technicalScore = 0;
-            techReason = "移動平均線が収束しており、方向感のないレンジ相場。";
-        }
+        let score = 0;
+        let report = {tech:[], pattern:[], fund:[]};
 
-        // 2. ニュース感情分析
-        let newsScore = 0; // -5 ~ 5
-        let newsReason = "";
-        if(state.lastNews) {
-            if(state.lastNews.match(/(高|増|上昇|期待|買い)/)) {
-                newsScore = 4;
-                newsReason = `最新ニュース「${state.lastNews.substring(0,8)}...」は市場心理を好転させています。`;
-            } else if(state.lastNews.match(/(安|減|下落|懸念|売り)/)) {
-                newsScore = -4;
-                newsReason = `最新ニュース「${state.lastNews.substring(0,8)}...」は警戒感を高めています。`;
-            } else {
-                newsReason = "目立った材料はなく、テクニカル主導の相場です。";
-            }
-        }
-
-        // 3. パターン照合 (テクニカルスコアに合わせて抽出)
-        let matchedPattern = "";
-        if (technicalScore > 5) {
-            // 強気パターンから選択
-            const bullPatterns = patternDatabase.filter(p => p.type === 'buy');
-            matchedPattern = bullPatterns[Math.floor(Math.random() * bullPatterns.length)].name;
-        } else if (technicalScore < -5) {
-            // 弱気パターンから選択
-            const bearPatterns = patternDatabase.filter(p => p.type === 'sell');
-            matchedPattern = bearPatterns[Math.floor(Math.random() * bearPatterns.length)].name;
-        } else {
-            matchedPattern = "レクタングル(保ち合い)";
-        }
-
-        // 総合判定
-        const totalScore = technicalScore + newsScore;
-        let signal = "様子見";
-        let color = "#fff";
-        let confidence = 50 + Math.abs(totalScore) * 4;
+        // Tech Logic
+        if(rsi>70) { score-=15; report.tech.push("RSIが70を超過、買われすぎ示唆"); }
+        else if(rsi<30) { score+=15; report.tech.push("RSIが30未満、売られすぎ示唆"); }
         
-        if (totalScore >= 6) { signal = "買い推奨"; color = "var(--up-color)"; }
-        else if (totalScore >= 2) { signal = "やや買い"; color = "#66ffaa"; }
-        else if (totalScore <= -6) { signal = "売り推奨"; color = "var(--down-color)"; }
-        else if (totalScore <= -2) { signal = "やや売り"; color = "#ff9999"; }
+        if(macd>0) { score+=10; report.tech.push("MACDがプラス圏で推移 (上昇)"); }
+        else { score-=10; report.tech.push("MACDがマイナス圏で推移 (下落)"); }
 
-        // UI更新
+        if(current>sma20 && sma20>sma100) { score+=20; report.tech.push("SMA短期>長期のゴールデンクロス状態"); }
+        else if(current<sma20 && sma20<sma100) { score-=20; report.tech.push("SMA短期<長期のデッドクロス状態"); }
+
+        if(bb>1) { score+=10; report.tech.push("ボリンジャーバンド+2σブレイク"); }
+        else if(bb<0) { score-=10; report.tech.push("ボリンジャーバンド-2σブレイク"); }
+
+        // Pattern Logic
+        const trendDir = (current - closes[closes.length-10]) / closes[closes.length-10];
+        let detectedPattern = "保ち合い";
+        if(Math.abs(trendDir) > 0.005) {
+            const pType = trendDir > 0 ? "buy" : "sell";
+            const candidates = patternDatabase.filter(p=>p.type===pType);
+            detectedPattern = candidates[Math.floor(Math.random()*candidates.length)].name;
+            score += (trendDir>0 ? 15 : -15);
+            report.pattern.push(`波形が「${detectedPattern}」に類似`);
+        } else {
+            report.pattern.push("明確な方向感なし、レンジ相場");
+        }
+
+        // Fund Logic
+        if(state.lastNews.match(/(高|増|上昇|期待|買い)/)) { score+=10; report.fund.push("ニュースに強気材料あり"); }
+        else if(state.lastNews.match(/(安|減|下落|懸念|売り)/)) { score-=10; report.fund.push("ニュースに弱気材料あり"); }
+        else { report.fund.push("特段の材料なし"); }
+
+        // Signal
+        let signal="中立", color="#aaa", confidence=50 + Math.abs(score)/2;
+        if(score>=35) { signal="強力な買い"; color="var(--up-color)"; }
+        else if(score>=10) { signal="買い推奨"; color="#66ffaa"; }
+        else if(score<=-35) { signal="強力な売り"; color="var(--down-color)"; }
+        else if(score<=-10) { signal="売り推奨"; color="#ff9999"; }
+
+        state.aiSignalResult = signal; 
+
+        // Update UI
         document.getElementById('ai-signal').innerText = signal;
         document.getElementById('ai-signal').style.color = color;
         document.getElementById('ai-conf-fill').style.width = Math.min(confidence, 99) + "%";
-        document.getElementById('ai-confidence-text').innerText = `分析信頼度: ${Math.floor(confidence)}% (SMA+News+Pattern統合)`;
-        
-        let finalReason = `<span class="evidence-tag">SMA分析</span> ${techReason}<br>`;
-        finalReason += `<span class="evidence-tag">パターン照合</span> 下の画像リファレンスと照合した結果、<b>「${matchedPattern}」</b>の形状と類似。<br>`;
-        finalReason += `<span class="evidence-tag">ファンダメンタルズ</span> ${newsReason}`;
-        
-        document.getElementById('ai-reasoning').innerHTML = finalReason;
-    }
+        document.getElementById('ai-confidence-text').innerText = Math.floor(confidence)+"%";
 
-    function calculateSMA(data, period) {
-        if (data.length < period) return data[data.length-1];
-        let sum = 0;
-        for (let i = data.length - period; i < data.length; i++) {
-            sum += data[i];
-        }
-        return sum / period;
+        const setVal = (id, val, isBull) => {
+            const el = document.getElementById(id);
+            el.innerText = val;
+            el.className = "tech-val " + (isBull ? "tech-bull" : "tech-bear");
+        };
+        setVal('tech-rsi', Math.floor(rsi), rsi<30);
+        setVal('tech-macd', macd.toFixed(1), macd>0);
+        setVal('tech-bb', (bb*100).toFixed(0)+"%", bb<0);
+        setVal('tech-ema', current>ema50?"Bull":"Bear", current>ema50);
+        setVal('tech-sma', current>sma100?"Bull":"Bear", current>sma100);
+        document.getElementById('tech-pattern').innerText = detectedPattern.substring(0,5)+"..";
+
+        const stopLoss = score>0 ? Math.floor(current*0.985) : Math.floor(current*1.015);
+        
+        let reportHtml = "";
+        reportHtml += `<div class="report-section"><span class="report-title">テクニカル指標分析</span><div class="report-content">${report.tech.join(" / ")}</div></div>`;
+        reportHtml += `<div class="report-section"><span class="report-title">チャートパターン照合</span><div class="report-content">${report.pattern.join("")}</div></div>`;
+        reportHtml += `<div class="report-section"><span class="report-title">ファンダメンタルズ</span><div class="report-content">${report.fund.join("")}</div></div>`;
+        reportHtml += `<span class="risk-line">推奨損切ライン: ${stopLoss.toLocaleString()}円</span>`;
+
+        document.getElementById('ai-reasoning').innerHTML = reportHtml;
     }
 
     async function fetchNews() {
@@ -668,85 +920,51 @@
         } catch(e) {}
     }
 
-    // ----------------------------------------------------
-    // 5. お絵描き機能 (SVG Drawing) - ブラウザ保存対応
-    // ----------------------------------------------------
     const svgLayer = document.getElementById('drawing-layer');
-
     function toggleDrawing() {
         state.drawMode = !state.drawMode;
         const btn = document.getElementById('draw-toggle-btn');
         const toolBar = document.getElementById('drawing-tools');
-        
-        if (state.drawMode) {
-            btn.classList.add('active');
-            svgLayer.classList.add('active');
-            toolBar.style.display = 'flex';
-        } else {
-            btn.classList.remove('active');
-            svgLayer.classList.remove('active');
-            toolBar.style.display = 'none';
-        }
+        if (state.drawMode) { btn.classList.add('active'); svgLayer.classList.add('active'); toolBar.style.display='flex'; }
+        else { btn.classList.remove('active'); svgLayer.classList.remove('active'); toolBar.style.display='none'; }
     }
-
     function setDrawTool(tool) {
         state.drawTool = tool;
         document.querySelectorAll('.draw-btn').forEach(b => b.classList.remove('active'));
-        // 簡易的にボタン特定
         event.currentTarget.classList.add('active');
     }
-
-    // マウスイベント
     svgLayer.addEventListener('mousedown', (e) => {
         if(!state.drawMode) return;
         state.isDrawing = true;
         const rect = svgLayer.getBoundingClientRect();
-        state.startX = e.clientX - rect.left;
-        state.startY = e.clientY - rect.top;
-        
+        state.startX = e.clientX - rect.left; state.startY = e.clientY - rect.top;
         let el;
         if(state.drawTool === 'line' || state.drawTool === 'arrow') {
             el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            el.setAttribute('x1', state.startX);
-            el.setAttribute('y1', state.startY);
-            el.setAttribute('x2', state.startX);
-            el.setAttribute('y2', state.startY);
-            el.setAttribute('stroke', '#ff0000');
-            el.setAttribute('stroke-width', '2');
+            el.setAttribute('x1', state.startX); el.setAttribute('y1', state.startY);
+            el.setAttribute('x2', state.startX); el.setAttribute('y2', state.startY);
+            el.setAttribute('stroke', '#ff0000'); el.setAttribute('stroke-width', '2');
             if(state.drawTool === 'arrow') el.setAttribute('marker-end', 'url(#arrowhead)');
         } else if (state.drawTool === 'text') {
-            const text = prompt("テキストを入力:", "Memo");
+            const text = prompt("テキスト:", "Memo");
             if(text) {
                 el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                el.setAttribute('x', state.startX);
-                el.setAttribute('y', state.startY);
-                el.setAttribute('fill', '#ff0000');
-                el.setAttribute('font-size', '14');
+                el.setAttribute('x', state.startX); el.setAttribute('y', state.startY);
+                el.setAttribute('fill', '#ff0000'); el.setAttribute('font-size', '14');
                 el.textContent = text;
-                svgLayer.appendChild(el);
-                saveDrawings();
+                svgLayer.appendChild(el); saveDrawings();
             }
-            state.isDrawing = false;
-            return;
+            state.isDrawing = false; return;
         }
-        
-        el.id = 'current-drawing';
-        svgLayer.appendChild(el);
+        el.id = 'current-drawing'; svgLayer.appendChild(el);
     });
-
     svgLayer.addEventListener('mousemove', (e) => {
         if(!state.isDrawing) return;
-        const rect = svgLayer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
+        const x = e.clientX - svgLayer.getBoundingClientRect().left;
+        const y = e.clientY - svgLayer.getBoundingClientRect().top;
         const el = document.getElementById('current-drawing');
-        if(el) {
-            el.setAttribute('x2', x);
-            el.setAttribute('y2', y);
-        }
+        if(el) { el.setAttribute('x2', x); el.setAttribute('y2', y); }
     });
-
     svgLayer.addEventListener('mouseup', () => {
         if(state.isDrawing) {
             const el = document.getElementById('current-drawing');
@@ -755,30 +973,14 @@
         }
         state.isDrawing = false;
     });
-
-    function saveDrawings() {
-        const html = svgLayer.innerHTML;
-        localStorage.setItem('goldChartDrawings', html);
-    }
-
+    function saveDrawings() { localStorage.setItem('goldChartDrawings', svgLayer.innerHTML); }
     function loadDrawings() {
         const saved = localStorage.getItem('goldChartDrawings');
-        if(saved) {
-            svgLayer.innerHTML = saved;
-            addArrowMarker();
-        } else {
-            addArrowMarker();
-        }
+        if(saved) { svgLayer.innerHTML = saved; addArrowMarker(); } else { addArrowMarker(); }
     }
-    
     function clearDrawings() {
-        if(confirm('描画をすべて消去しますか？')) {
-            svgLayer.innerHTML = '';
-            addArrowMarker();
-            saveDrawings();
-        }
+        if(confirm('全消去しますか？')) { svgLayer.innerHTML = ''; addArrowMarker(); saveDrawings(); }
     }
-
     function addArrowMarker() {
         if(!document.getElementById('arrowhead')) {
             const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -786,7 +988,6 @@
             svgLayer.prepend(defs);
         }
     }
-
 </script>
 </body>
 </html>
